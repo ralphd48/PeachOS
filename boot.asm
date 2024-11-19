@@ -8,9 +8,14 @@ start:
     mov es, ax
     mov ax, 0x00
     mov ss, ax
-    sti
-    mov si, message
-    call print
+    sti 
+
+    mov ax, 0x7c0
+    mov word[ss:0x202], ax
+    lea ax,[print]
+    mov word[ss:0x200], ax
+    lea si,[message]
+    int 0x80
     jmp $
 
 print:
@@ -24,7 +29,7 @@ print:
     call print_char
     jmp .loop
 .done:
-    ret
+    iret
 
 print_char:
     mov ah,0eh
@@ -34,6 +39,7 @@ print_char:
     ret
 
 message: db 'Hello World', 0
+isr_message: db 'Interrupt Happen', 0
 
 times 510-($-$$) db 0
 
