@@ -11,12 +11,16 @@ start:
     sti 
 
     mov ax, 0x7c0
-    mov word[ss:0x202], ax
-    lea ax,[print]
-    mov word[ss:0x200], ax
-    lea si,[message]
-    int 0x80
+    mov word[ss:0x02], ax
+    mov ax, div_zero_handler
+    mov word[ss:0x00], ax
+    mov ax, 0
+    div ax
     jmp $
+div_zero_handler:
+    mov si, div_zero_message
+    call print
+    iret
 
 print:
     mov bx, 0
@@ -29,7 +33,7 @@ print:
     call print_char
     jmp .loop
 .done:
-    iret
+    ret
 
 print_char:
     mov ah,0eh
@@ -38,6 +42,7 @@ print_char:
 
     ret
 
+div_zero_message: db 'Divide by zero error,',0
 message: db 'Hello World', 0
 isr_message: db 'Interrupt Happen', 0
 
